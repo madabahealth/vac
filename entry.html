@@ -1,220 +1,264 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل فحص موظف جديد</title>
+  <title>إدخال فحوصات الموظفين - Hepatitis B Titer</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <style>
     :root {
       --primary: #2563eb;
-      --primary-dark: #1d4ed8;
       --secondary: #0f172a;
       --bg-light: #f8fafc;
       --surface: #ffffff;
-      --text-main: #1e293b;
-      --border: #e2e8f0;
+      --border: #cbd5e1;
       --radius: 12px;
-      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      --shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
-    body { background-color: var(--bg-light); color: var(--text-main); padding: 1.5rem; }
+    body { background-color: var(--bg-light); color: var(--secondary); padding: 2rem 1rem; }
 
-    .header-title {
-      max-width: 900px;
-      margin: 0 auto 1.5rem auto;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--secondary);
-    }
-
-    .card {
-      max-width: 900px;
+    .form-card {
+      max-width: 750px;
       margin: 0 auto;
       background: var(--surface);
-      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 2rem;
+      padding: 2.5rem;
       box-shadow: var(--shadow);
+      border: 1px solid var(--border);
     }
 
-    .card-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--secondary);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      border-bottom: 2px solid var(--bg-light);
-      padding-bottom: 1rem;
-    }
+    .form-header { text-align: center; margin-bottom: 2rem; }
+    .form-header h2 { font-size: 1.6rem; color: var(--secondary); font-weight: 800; margin-bottom: 0.5rem; }
+    .form-header p { font-size: 0.9rem; color: #64748b; }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.2rem;
     }
 
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-    .form-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
-    .form-group input, .form-group select {
+    .form-group label { font-size: 0.85rem; font-weight: 700; color: #334155; }
+    
+    .form-group input {
       padding: 0.75rem;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.95rem;
       outline: none;
+      transition: all 0.2s;
+      background-color: #f8fafc;
     }
-    .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+
+    .form-group input:focus {
+      border-color: var(--primary);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* حقول القراءة فقط التلقائية */
+    .readonly-input {
+      background-color: #e2e8f0 !important;
+      font-weight: 800;
+      cursor: not-allowed;
+      color: #1e293b;
+    }
 
     .btn-submit {
-      grid-column: 1 / -1;
+      width: 100%;
+      padding: 0.9rem;
       background: var(--primary);
       color: white;
       border: none;
-      padding: 1rem;
       border-radius: 8px;
       font-size: 1.05rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
+      margin-top: 1.5rem;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 0.5rem;
-      margin-top: 1rem;
       transition: background 0.2s;
     }
-    .btn-submit:hover { background: var(--primary-dark); }
 
-    #toast {
-      position: fixed; bottom: 20px; left: 20px;
-      padding: 1rem 1.5rem; border-radius: 8px; background: var(--secondary); color: white;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; z-index: 1000; font-weight: 600;
+    .btn-submit:hover { background: #1d4ed8; }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    #alertBox {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: none;
+      text-align: center;
     }
+    .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
   </style>
 </head>
 <body>
 
-  <div class="header-title">
-    <i class="fa-solid fa-hospital-user" style="color: var(--primary);"></i> نظام تسجيل الفحوصات الطبية للموظفين
-  </div>
+  <div class="form-card">
+    <div class="form-header">
+      <h2><i class="fa-solid fa-notes-medical" style="color: var(--primary);"></i> إدخال نتائج فحص Titer للموظف</h2>
+      <p>قم بإدخال بيانات الفحص لسيتم حساب الجرعات وموعد إعادة الفحص أوتوماتيكياً</p>
+    </div>
 
-  <div class="card">
-    <h2 class="card-title"><i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> تسجيل بيانات فحص موظف جديد</h2>
-    <form id="healthForm" onsubmit="handleFormSubmit(event)">
+    <form id="entryForm" onsubmit="submitForm(event)">
       <div class="form-grid">
         <div class="form-group">
-          <label>اسم الموظف</label>
-          <input type="text" id="employeeName" required placeholder="مثال: أحمد محمد علي">
+          <label>اسم الموظف الثلاثي *</label>
+          <input type="text" id="employeeName" required placeholder="أدخل الاسم">
         </div>
+
         <div class="form-group">
-          <label>الرقم الوطني</label>
-          <input type="text" id="nationalId" required pattern="[0-9]{10}" title="10 أرقام" placeholder="10 أرقام">
+          <label>الرقم الوطني *</label>
+          <input type="text" id="nationalId" required placeholder="أدخل الرقم الوطني">
         </div>
+
         <div class="form-group">
           <label>المسمى الوظيفي</label>
-          <input type="text" id="jobTitle" required placeholder="مثال: ممرض / طبيب">
+          <input type="text" id="jobTitle" placeholder="مثال: ممرض / طبيب">
         </div>
+
         <div class="form-group">
-          <label>اسم المركز</label>
-          <input type="text" id="centerName" required placeholder="اسم المركز الصحي / المستشفى">
+          <label>اسم المركز الصحي / المستشفى</label>
+          <input type="text" id="centerName" placeholder="أدخل اسم المركز">
         </div>
+
         <div class="form-group">
           <label>القسم</label>
-          <input type="text" id="department" required placeholder="مثال: الطوارئ / المختبر">
+          <input type="text" id="department" placeholder="أدخل اسم القسم">
         </div>
+
         <div class="form-group">
-          <label>تاريخ الفحص</label>
-          <input type="date" id="testDate" required>
+          <label>تاريخ الفحص *</label>
+          <input type="date" id="testDate" required onchange="calculateAutoFields()">
         </div>
+
         <div class="form-group">
-          <label>نتيجة Titer (وحدة دولية)</label>
-          <input type="number" step="0.1" id="titerResult" required placeholder="مثال: 12.5" oninput="autoCheckVaccine()">
+          <label>نتيجة الـ Titer (وحدة/مل)</label>
+          <input type="number" step="0.1" id="titerResult" placeholder="اتركه فارغاً إذا بانتظار النتيجة" oninput="calculateAutoFields()">
         </div>
+
+        <!-- حقل يحتاج مطعوم تلقائي مقفل -->
         <div class="form-group">
-          <label>يحتاج مطعوم Vaccine؟</label>
-          <select id="needsVaccine" required>
-            <option value="لا">لا</option>
-            <option value="نعم">نعم</option>
-          </select>
+          <label>يحتاج مطعوم Vaccine؟ (تلقائي)</label>
+          <input type="text" id="needsVaccine" class="readonly-input" readonly value="بانتظار النتيجة">
         </div>
+
+        <!-- حقل موعد إعادة الفحص تلقائي مقفل -->
         <div class="form-group">
-          <label>موعد إعادة الفحص</label>
-          <input type="date" id="retestDate" required>
+          <label>موعد إعادة الفحص (تلقائي)</label>
+          <input type="text" id="retestDate" class="readonly-input" readonly value="-">
         </div>
-        <button type="submit" class="btn-submit" id="submitBtn">
-          <i class="fa-solid fa-paper-plane"></i> حفظ وإرسال البيانات
-        </button>
       </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <i class="fa-solid fa-paper-plane"></i> حفظ البيانات
+      </button>
+
+      <div id="alertBox"></div>
     </form>
   </div>
 
-  <div id="toast"></div>
-
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1mF-j0oz4XzGUPQ12qOCi253UISVTvXUV3sqnS5-2uTSOsVeISVNlITfYTkblpRr49A/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfQVitVkmqLtMl7kXWPi2e3tu5-QRD80Cr1qOOfwoj4qvVOHpFI2TyDXIUq54OcHB8GA/exec";
 
-    function autoCheckVaccine() {
-      const titerVal = parseFloat(document.getElementById('titerResult').value);
-      const vaccineSelect = document.getElementById('needsVaccine');
-      if (!isNaN(titerVal)) {
-        vaccineSelect.value = titerVal < 15 ? "نعم" : "لا";
+    // تعيين تاريخ اليوم افتراضياً عند التحميل
+    window.onload = function() {
+      document.getElementById('testDate').valueStr = new Date().toISOString().split('T')[0];
+      document.getElementById('testDate').value = new Date().toISOString().split('T')[0];
+      calculateAutoFields();
+    };
+
+    // معادلة الحساب التلقائي بناءً على قيمة Titer
+    function calculateAutoFields() {
+      const titerInput = document.getElementById('titerResult').value;
+      const testDateInput = document.getElementById('testDate').value;
+
+      const needsVaccineField = document.getElementById('needsVaccine');
+      const retestDateField = document.getElementById('retestDate');
+
+      if (titerInput === "" || titerInput === null) {
+        needsVaccineField.value = "بانتظار النتيجة";
+        needsVaccineField.style.color = "#d97706";
+        retestDateField.value = "-";
+        return;
+      }
+
+      const titerVal = parseFloat(titerInput);
+
+      if (titerVal < 10) {
+        needsVaccineField.value = "نعم (يحتاج مطعوم)";
+        needsVaccineField.style.color = "#dc2626";
+
+        if (testDateInput) {
+          const tDate = new Date(testDateInput);
+          // إضافة 4 أشهر (شهرين بعد الجرعة الثالثة)
+          tDate.setMonth(tDate.getMonth() + 4);
+          retestDateField.value = tDate.toISOString().split('T')[0];
+        } else {
+          retestDateField.value = "حدد تاريخ الفحص أولاً";
+        }
+      } else {
+        needsVaccineField.value = "لا (محصن)";
+        needsVaccineField.style.color = "#16a34a";
+        retestDateField.value = "غير مطلوب";
       }
     }
 
-    function handleFormSubmit(e) {
+    function submitForm(e) {
       e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...`;
+      const submitBtn = document.getElementById('submitBtn');
+      const alertBox = document.getElementById('alertBox');
 
-      const newRecord = {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...`;
+      alertBox.style.display = 'none';
+
+      const formData = {
         employeeName: document.getElementById('employeeName').value,
         nationalId: document.getElementById('nationalId').value,
         jobTitle: document.getElementById('jobTitle').value,
         centerName: document.getElementById('centerName').value,
         department: document.getElementById('department').value,
         testDate: document.getElementById('testDate').value,
-        titerResult: parseFloat(document.getElementById('titerResult').value),
-        needsVaccine: document.getElementById('needsVaccine').value,
-        retestDate: document.getElementById('retestDate').value
+        titerResult: document.getElementById('titerResult').value
       };
 
       fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "ADD_RECORD", data: newRecord })
+        body: JSON.stringify({ action: "ADD_RECORD", data: formData })
       })
       .then(res => res.json())
       .then(res => {
-        if (res.status === "success") {
-          showToast("تم حفظ البيانات بنجاح في Google Sheet!", "success");
-          document.getElementById('healthForm').reset();
+        if(res.status === "success") {
+          alertBox.className = "alert-success";
+          alertBox.innerText = "تم حفظ بيانات الفحص بنجاح!";
+          alertBox.style.display = "block";
+          document.getElementById('entryForm').reset();
+          document.getElementById('testDate').value = new Date().toISOString().split('T')[0];
+          calculateAutoFields();
         } else {
-          showToast("حدث خطأ أثناء الحفظ", "error");
+          throw new Error(res.message);
         }
       })
       .catch(err => {
-        showToast("تم إرسال البيانات بنجاح!", "success");
-        document.getElementById('healthForm').reset();
+        alertBox.className = "alert-error";
+        alertBox.innerText = "حدث خطأ أثناء الحفظ: " + err.message;
+        alertBox.style.display = "block";
       })
       .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> حفظ وإرسال البيانات`;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> حفظ البيانات`;
       });
-    }
-
-    function showToast(msg, type) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.style.background = type === 'error' ? '#ef4444' : '#10b981';
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3000);
     }
   </script>
 </body>
