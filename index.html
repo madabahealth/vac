@@ -304,51 +304,65 @@
       document.getElementById('countPending').innerText = pending;
     }
 
-    // دالة ممتازة لاستخراج التاريخ فقط (YYYY-MM-DD) وإلغاء الوقت مهما كانت صيغته
-    function cleanDateStr(rawDate) {
-      if (!rawDate) return "";
-      let str = String(rawDate).trim();
+    // --- دالة تحويل احترافية تحول أي نص/كائن تاريخ إلى كائن Date سليمة 100% ---
+    function parseToDate(input) {
+      if (!input) return null;
+      
+      // إذا كان القادم أصلاً Date
+      if (input instanceof Date && !isNaN(input)) return input;
 
-      // حذف أي وقت ملحق يقع بعد مسافة أو بعد حرف T
-      str = str.split('T')[0].split(' ')[0];
+      let str = String(input).trim();
+      if (!str) return null;
 
-      // تحويل الفواصل / إلى -
+      // اقتطاع أي وقت محتمل في النص
+      if (str.includes('T')) str = str.split('T')[0];
+      if (str.includes(' ')) str = str.split(' ')[0];
+
+      // معالجة الصيغ المعكوسة مفصولة بـ - أو /
       str = str.replace(/\//g, '-');
-
       const parts = str.split('-');
+
       if (parts.length === 3) {
-        // حالة الصيغة DD-MM-YYYY
+        // إذا كان الشكل DD-MM-YYYY
         if (parts[0].length === 2 && parts[2].length === 4) {
-          return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+          return new Date(Date.UTC(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])));
         }
-        // حالة الصيغة القياسية YYYY-MM-DD
+        // إذا كان الشكل YYYY-MM-DD
         if (parts[0].length === 4) {
-          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+          return new Date(Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])));
         }
       }
-      return str;
+
+      // محاولة أخيرة عبر Date.parse
+      const d = new Date(str);
+      return !isNaN(d.getTime()) ? d : null;
     }
 
-    // دالة إضافة أشهر متقدمة وتتفادى أخطاء تغيير المناطق الزمنية والوقت
-    function addMonthsToDateString(dateStr, monthsToAdd) {
-      const clean = cleanDateStr(dateStr);
-      const parts = clean.split('-');
-      if (parts.length !== 3) return "-";
+    // دالة استخراج النص فقط بصيغة YYYY-MM-DD وحذف الوقت نهائياً
+    function cleanDateStr(rawDate) {
+      const d = parseToDate(rawDate);
+      if (!d) return "";
+      
+      let y = d.getUTCFullYear();
+      let m = String(d.getUTCMonth() + 1).padStart(2, '0');
+      let day = String(d.getUTCDate()).padStart(2, '0');
+      
+      return `${y}-${m}-${day}`;
+    }
 
-      let year = parseInt(parts[0], 10);
-      let month = parseInt(parts[1], 10) - 1; // الأشهر في JS تبدأ من 0
-      let day = parseInt(parts[2], 10);
+    // دالة حاسبة للجرعات الثانية والثالثة وإعادة الفحص
+    function addMonthsToDateString(rawDate, monthsToAdd) {
+      const d = parseToDate(rawDate);
+      if (!d) return "-";
 
-      if (isNaN(year) || isNaN(month) || isNaN(day)) return "-";
-
-      // إضافة الأشهر باستخدام Date.UTC لضمان الاستقرار وعدم التأثر بالساعات
-      let targetDate = new Date(Date.UTC(year, month + monthsToAdd, day));
+      // إنشاء كائن تاريخ جديد آمن بالتوقيت العالمي UTC
+      let targetDate = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + monthsToAdd, d.getUTCDate()));
       
       let y = targetDate.getUTCFullYear();
       let m = String(targetDate.getUTCMonth() + 1).padStart(2, '0');
-      let d = String(targetDate.getUTCDate()).padStart(2, '0');
+      let day = String(targetDate.getUTCDate()).padStart(2, '0');
 
-      return `${y}-${m}-${d}`;
+      return `${y}-${m}-${day}`;
     }
 
     function renderTable(data) {
@@ -370,7 +384,7 @@
         let titerDisplay = "";
         let dose1 = "-", dose2 = "-", dose3 = "-", retestDisplay = "-";
         
-        // استخراج تاريخ الفحص فقط بخالي من الوقت
+        // استخراج تاريخ الفحص كـ YYYY-MM-DD
         const displayTestDate = cleanDateStr(item.testDate);
 
         if (isNaN(titerVal)) {
@@ -378,11 +392,11 @@
         } else if (titerVal < 10) {
           titerDisplay = `<span class="badge badge-red"><i class="fa-solid fa-triangle-exclamation"></i> ${titerVal} (يحتاج مطعوم)</span>`;
           
-          if (displayTestDate && displayTestDate !== "-") {
-            dose1 = displayTestDate; // الجرعة 1 نفس تاريخ الفحص
-            dose2 = addMonthsToDateString(displayTestDate, 1); // الجرعة 2 بعد شهر
-            dose3 = addMonthsToDateString(displayTestDate, 2); // الجرعة 3 بعد شهرين
-            retestDisplay = addMonthsToDateString(displayTestDate, 4); // إعادة الفحص بعد 4 أشهر
+          if (displayTestDate) {
+            dose1 = displayTestDate; // الجرعة 1 (تاريخ الفحص)
+            dose2 = addMonthsToDateString(item.testDate, 1); // الجرعة 2 (بعد شهر)
+            dose3 = addMonthsToDateString(item.testDate, 2); // الجرعة 3 (بعد شهرين)
+            retestDisplay = addMonthsToDateString(item.testDate, 4); // إعادة الفحص (بعد 4 أشهر)
           }
         } else {
           titerDisplay = `<span class="badge badge-green"><i class="fa-solid fa-shield-halved"></i> ${titerVal} (محصن)</span>`;
