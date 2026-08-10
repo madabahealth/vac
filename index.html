@@ -1,12 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم والإحصائيات - الإدارة</title>
+  <title>لوحة تحكم المدير - متابعة الفحوصات الطبية</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
@@ -15,328 +15,401 @@
       --bg-light: #f8fafc;
       --surface: #ffffff;
       --text-main: #1e293b;
-      --text-muted: #64748b;
-      --danger: #ef4444;
-      --danger-bg: #fef2f2;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --warning-bg: #fffbeeb;
       --border: #e2e8f0;
       --radius: 12px;
       --shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+
+      /* ألوان الحالات المطلوب تحديدها */
+      --color-green: #10b981;
+      --color-red: #ef4444;
+      --color-yellow: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-main); padding: 1.5rem; }
 
-    header {
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      background: var(--surface);
-      padding: 1rem 1.5rem;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    header h1 { font-size: 1.3rem; color: var(--secondary); }
-
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-    .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      display: flex;
-      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
       gap: 1rem;
     }
-    .kpi-icon {
-      width: 50px; height: 50px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-    }
-    .kpi-icon.blue { background: #dbeafe; color: var(--primary); }
-    .kpi-icon.green { background: #d1fae5; color: var(--success); }
-    .kpi-icon.red { background: #fee2e2; color: var(--danger); }
-    .kpi-icon.amber { background: #fef3c7; color: var(--warning); }
-    .kpi-info h3 { font-size: 0.85rem; color: var(--text-muted); }
-    .kpi-info p { font-size: 1.5rem; font-weight: 800; color: var(--secondary); }
 
-    .alerts-container { margin-bottom: 1.5rem; }
-    .alert-item {
-      padding: 1rem;
-      border-radius: var(--radius);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .alert-item.warning { background: var(--warning-bg); border: 1px solid #fde68a; color: #92400e; }
-    .alert-item.danger { background: var(--danger-bg); border: 1px solid #fecaca; color: #991b1b; }
-
-    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-    }
-    .card-title { font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1.2rem; }
-    .chart-container { position: relative; height: 260px; width: 100%; }
-
-    .table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; text-align: right; background: var(--surface); font-size: 0.9rem; }
-    th { background: #f8fafc; padding: 0.85rem; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: 700; }
-    td { padding: 0.85rem; border-bottom: 1px solid var(--border); }
-    
-    tr.low-titer { background-color: var(--danger-bg) !important; }
-    tr.low-titer td { color: #991b1b; font-weight: 600; }
-    
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-    .badge-danger { background: #fee2e2; color: #991b1b; }
-    .badge-success { background: #d1fae5; color: #065f46; }
+    .header h1 { font-size: 1.6rem; color: var(--secondary); font-weight: 800; }
 
     .btn-refresh {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 8px;
+      font-weight: 700;
       cursor: pointer;
-      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.5rem;
+      transition: opacity 0.2s;
+    }
+    .btn-refresh:hover { opacity: 0.9; }
+
+    /* كروت الداشبورد الإحصائية */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-info h3 { font-size: 0.85rem; color: #64748b; margin-bottom: 0.4rem; }
+    .kpi-info .value { font-size: 1.8rem; font-weight: 800; }
+    .kpi-icon {
+      font-size: 2rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* تخصيص الألوان المطلوبة للداشبورد */
+    .card-green { border-right: 5px solid var(--color-green); }
+    .card-green .value { color: var(--color-green); }
+    .card-green .kpi-icon { background: #dcfce7; color: var(--color-green); }
+
+    .card-red { border-right: 5px solid var(--color-red); }
+    .card-red .value { color: var(--color-red); }
+    .card-red .kpi-icon { background: #fee2e2; color: var(--color-red); }
+
+    .card-yellow { border-right: 5px solid var(--color-yellow); }
+    .card-yellow .value { color: var(--color-yellow); }
+    .card-yellow .kpi-icon { background: #fef3c7; color: var(--color-yellow); }
+
+    .card-blue { border-right: 5px solid var(--primary); }
+    .card-blue .value { color: var(--primary); }
+    .card-blue .kpi-icon { background: #dbeafe; color: var(--primary); }
+
+    /* جدول البيانات */
+    .table-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 280px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 2.2rem 0.6rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+    }
+    .search-box i {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+    }
+
+    th {
+      background: #f1f5f9;
+      padding: 0.85rem;
+      font-size: 0.85rem;
+      color: var(--secondary);
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.85rem;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tr:hover { background-color: #f8fafc; }
+
+    /* أوسمة التنبيهات والتحذيرات داخل الجدول */
+    .badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .badge-red { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .badge-green { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+    .badge-yellow { background: #fef3c7; color: #d97706; border: 1px solid #fde047; }
+
+    .warning-pulse {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    #loading {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1><i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> لوحة متابعة الفحوصات الطبية</h1>
-    <button class="btn-refresh" onclick="loadDashboardData()">
-      <i class="fa-solid fa-rotate" id="refreshIcon"></i> تحديث البيانات
-    </button>
-  </header>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> لوحة تحكم المدير - متابعة الفحوصات</h1>
+      <button class="btn-refresh" onclick="loadData()">
+        <i class="fa-solid fa-rotate-right" id="refreshIcon"></i> تحديث البيانات
+      </button>
+    </div>
 
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
-      <div class="kpi-info">
-        <h3>إجمالي المسجلين</h3>
-        <p id="kpiTotal">0</p>
+    <!-- بطاقات الداشبورد -->
+    <div class="kpi-grid">
+      <div class="kpi-card card-green">
+        <div class="kpi-info">
+          <h3>المحصنين</h3>
+          <div class="value" id="countVaccinated">0</div>
+        </div>
+        <div class="kpi-icon"><i class="fa-solid fa-user-shield"></i></div>
+      </div>
+
+      <div class="kpi-card card-red">
+        <div class="kpi-info">
+          <h3>غير محصن (يحتاج لقاح)</h3>
+          <div class="value" id="countNeedVaccine">0</div>
+        </div>
+        <div class="kpi-icon"><i class="fa-solid fa-syringe"></i></div>
+      </div>
+
+      <div class="kpi-card card-yellow">
+        <div class="kpi-info">
+          <h3>بانتظار (إعادة فحص/لقاح)</h3>
+          <div class="value" id="countPending">0</div>
+        </div>
+        <div class="kpi-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+      </div>
+
+      <div class="kpi-card card-blue">
+        <div class="kpi-info">
+          <h3>نسبة التغطية</h3>
+          <div class="value" id="coverageRate">0%</div>
+        </div>
+        <div class="kpi-icon"><i class="fa-solid fa-percent"></i></div>
       </div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-icon green"><i class="fa-solid fa-shield-virus"></i></div>
-      <div class="kpi-info">
-        <h3>عدد المحصنين</h3>
-        <p id="kpiVaccinated">0</p>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <div class="kpi-info">
-        <h3>غير المحصنين (Titer < 15)</h3>
-        <p id="kpiNonVaccinated">0</p>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-icon amber"><i class="fa-solid fa-percent"></i></div>
-      <div class="kpi-info">
-        <h3>نسبة التغطية</h3>
-        <p id="kpiCoverage">0%</p>
-      </div>
-    </div>
-  </div>
 
-  <div id="alertsContainer" class="alerts-container"></div>
+    <!-- جدول البيانات -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2>سجل فحوصات الموظفين</h2>
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="بحث باسم الموظف، الرقم الوطني، المركز...">
+        </div>
+      </div>
 
-  <div class="charts-grid">
-    <div class="card">
-      <h3 class="card-title"><i class="fa-solid fa-chart-pie"></i> حالة التحصين العامة</h3>
-      <div class="chart-container"><canvas id="immunityChart"></canvas></div>
-    </div>
-    <div class="card">
-      <h3 class="card-title"><i class="fa-solid fa-chart-column"></i> التوزيع حسب الأقسام</h3>
-      <div class="chart-container"><canvas id="deptChart"></canvas></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3 class="card-title"><i class="fa-solid fa-table-list"></i> سجل البيانات المدخلة الكامل</h3>
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>اسم الموظف</th>
-            <th>الرقم الوطني</th>
-            <th>الوظيفة</th>
-            <th>المركز / القسم</th>
-            <th>تاريخ الفحص</th>
-            <th>نتيجة Titer</th>
-            <th>المطعوم</th>
-            <th>إعادة الفحص</th>
-            <th>الحالة</th>
-          </tr>
-        </thead>
-        <tbody id="recordsTableBody"></tbody>
-      </table>
+      <div class="table-responsive">
+        <table id="recordsTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>اسم الموظف</th>
+              <th>الرقم الوطني</th>
+              <th>المركز / القسم</th>
+              <th>تاريخ الفحص</th>
+              <th>نتيجة Titer</th>
+              <th>حالة التطعيم</th>
+              <th>موعد إعادة الفحص</th>
+              <th>التنبيهات</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- سيتم إضافة البيانات هنا عبر JavaScript -->
+          </tbody>
+        </table>
+        <div id="loading"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل البيانات...</div>
+      </div>
     </div>
   </div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1mF-j0oz4XzGUPQ12qOCi253UISVTvXUV3sqnS5-2uTSOsVeISVNlITfYTkblpRr49A/exec";
+    let allRecords = [];
 
-    let recordsData = [];
-    let immunityChartObj = null;
-    let deptChartObj = null;
+    // تحميل البيانات عند فتح الصفحة
+    window.onload = loadData;
 
-    window.onload = () => {
-      loadDashboardData();
-    };
+    function loadData() {
+      const refreshIcon = document.getElementById('refreshIcon');
+      refreshIcon.classList.add('fa-spin');
+      document.getElementById('loading').style.display = 'block';
 
-    async function loadDashboardData() {
-      const icon = document.getElementById('refreshIcon');
-      icon.classList.add('fa-spin');
-
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "GET_RECORDS" })
+      fetch(SCRIPT_URL + "?action=GET_RECORDS")
+        .then(res => res.json())
+        .then(data => {
+          allRecords = data;
+          renderDashboard(data);
+          renderTable(data);
+        })
+        .catch(err => {
+          console.error("خطأ في جلب البيانات:", err);
+          document.getElementById('loading').innerText = "حدث خطأ أثناء تحميل البيانات من الخادم.";
+        })
+        .finally(() => {
+          refreshIcon.classList.remove('fa-spin');
         });
-        const response = await res.json();
+    }
 
-        if (response.status === "success" && Array.isArray(response.data)) {
-          recordsData = response.data;
-          renderDashboard();
+    function renderDashboard(data) {
+      let vaccinated = 0;
+      let needVaccine = 0;
+      let pending = 0;
+      const today = new Date();
+
+      data.forEach(item => {
+        const titer = parseFloat(item.titerResult);
+        const retestDate = new Date(item.retestDate);
+
+        if (titer >= 15) {
+          vaccinated++;
+        } else if (item.needsVaccine === "نعم") {
+          needVaccine++;
         }
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      } finally {
-        icon.classList.remove('fa-spin');
+
+        // حساب حالة بانتظار (إذا كان موعد القاح/إعادة الفحص في المستقبل أو لم يُنجز)
+        if (retestDate >= today || item.status === "بانتظار") {
+          pending++;
+        }
+      });
+
+      const total = data.length;
+      const rate = total > 0 ? ((vaccinated / total) * 100).toFixed(1) : 0;
+
+      document.getElementById('countVaccinated').innerText = vaccinated;
+      document.getElementById('countNeedVaccine').innerText = needVaccine;
+      document.getElementById('countPending').innerText = pending;
+      document.getElementById('coverageRate').innerText = rate + "%";
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('tableBody');
+      const loading = document.getElementById('loading');
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        loading.innerText = "لا توجد بيانات مسجلة حتى الآن.";
+        return;
       }
-    }
-
-    function renderDashboard() {
-      renderTableAndAlerts();
-      calculateKPIs();
-      renderCharts();
-    }
-
-    function renderTableAndAlerts() {
-      const tbody = document.getElementById('recordsTableBody');
-      const alertsDiv = document.getElementById('alertsContainer');
-      tbody.innerHTML = '';
-      alertsDiv.innerHTML = '';
+      loading.style.display = 'none';
 
       const today = new Date();
-      let alertHTML = '';
 
-      recordsData.forEach(row => {
-        const isLowTiter = row.titerResult < 15;
-        const retestDateObj = new Date(row.retestDate);
-        const daysToRetest = Math.ceil((retestDateObj - today) / (1000 * 60 * 60 * 24));
+      data.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        const titer = parseFloat(item.titerResult);
+        const retestDate = new Date(item.retestDate);
+        
+        // حساب فرق الأيام بين اليوم وموعد الفحص
+        const diffDays = Math.ceil((retestDate - today) / (1000 * 60 * 60 * 24));
 
-        const trClass = isLowTiter ? 'low-titer' : '';
-        const badge = isLowTiter 
-          ? `<span class="badge badge-danger"><i class="fa-solid fa-xmark"></i> غير محصن</span>`
-          : `<span class="badge badge-success"><i class="fa-solid fa-check"></i> محصن</span>`;
+        // 1. تحذير نتيجة Titer (أقل من 15)
+        let titerBadge = titer < 15 
+          ? `<span class="badge badge-red warning-pulse"><i class="fa-solid fa-triangle-exclamation"></i> ${titer} (منخفض)</span>`
+          : `<span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> ${titer}</span>`;
 
-        if (daysToRetest >= 0 && daysToRetest <= 14) {
-          alertHTML += `
-            <div class="alert-item warning">
-              <i class="fa-solid fa-clock"></i>
-              تنبيه: اقتراب موعد إعادة الفحص للموظف <strong>${row.employeeName}</strong> (${row.department}) بتاريخ <strong>${row.retestDate}</strong>.
-            </div>`;
+        // 2. حالة اللقاح (أحمر، أخضر، أصفر)
+        let vaccineStatus = "";
+        if (titer >= 15) {
+          vaccineStatus = `<span class="badge badge-green"><i class="fa-solid fa-shield"></i> محصن</span>`;
+        } else if (item.needsVaccine === "نعم") {
+          vaccineStatus = `<span class="badge badge-red"><i class="fa-solid fa-syringe"></i> غير محصن (يحتاج لقاح)</span>`;
+        } else {
+          vaccineStatus = `<span class="badge badge-yellow"><i class="fa-solid fa-hourglass-half"></i> بانتظار المطعوم</span>`;
         }
 
-        if (isLowTiter && row.needsVaccine === "نعم") {
-          alertHTML += `
-            <div class="alert-item danger">
-              <i class="fa-solid fa-syringe"></i>
-              تنبيه هام: الموظف <strong>${row.employeeName}</strong> النتيجة أقل من 15 (Titer: ${row.titerResult}) ويحتاج أخذ المطعوم فوراً.
-            </div>`;
+        // 3. تنبيهات مواعيد إعادة الفحص والمطعوم
+        let alertBadge = "";
+        if (diffDays < 0) {
+          alertBadge = `<span class="badge badge-red"><i class="fa-solid fa-circle-exclamation"></i> تجاوز موعد الفحص</span>`;
+        } else if (diffDays <= 7) {
+          alertBadge = `<span class="badge badge-yellow"><i class="fa-solid fa-bell"></i> موعده قريب (${diffDays} يوم)</span>`;
+        } else {
+          alertBadge = `<span style="color:#94a3b8; font-size: 0.8rem;">مجدول بنجاح</span>`;
         }
 
-        tbody.innerHTML += `
-          <tr class="${trClass}">
-            <td><strong>${row.employeeName}</strong></td>
-            <td>${row.nationalId}</td>
-            <td>${row.jobTitle}</td>
-            <td>${row.centerName} / ${row.department}</td>
-            <td>${row.testDate}</td>
-            <td><strong>${row.titerResult}</strong> IU/mL</td>
-            <td>${row.needsVaccine}</td>
-            <td>${row.retestDate}</td>
-            <td>${badge}</td>
-          </tr>`;
-      });
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td><strong>${item.employeeName}</strong></td>
+          <td>${item.nationalId}</td>
+          <td>${item.centerName} / ${item.department}</td>
+          <td>${item.testDate}</td>
+          <td>${titerBadge}</td>
+          <td>${vaccineStatus}</td>
+          <td>${item.retestDate}</td>
+          <td>${alertBadge}</td>
+        `;
 
-      alertsDiv.innerHTML = alertHTML;
+        tbody.appendChild(tr);
+      });
     }
 
-    function calculateKPIs() {
-      const total = recordsData.length;
-      const nonVaccinated = recordsData.filter(r => r.titerResult < 15).length;
-      const vaccinated = total - nonVaccinated;
-      const coverageRate = total > 0 ? ((vaccinated / total) * 100).toFixed(1) : 0;
-
-      document.getElementById('kpiTotal').innerText = total;
-      document.getElementById('kpiVaccinated').innerText = vaccinated;
-      document.getElementById('kpiNonVaccinated').innerText = nonVaccinated;
-      document.getElementById('kpiCoverage').innerText = coverageRate + '%';
-    }
-
-    function renderCharts() {
-      const total = recordsData.length;
-      const nonVaccinated = recordsData.filter(r => r.titerResult < 15).length;
-      const vaccinated = total - nonVaccinated;
-
-      const ctx1 = document.getElementById('immunityChart').getContext('2d');
-      if (immunityChartObj) immunityChartObj.destroy();
-      immunityChartObj = new Chart(ctx1, {
-        type: 'doughnut',
-        data: {
-          labels: ['محصن (≥15)', 'غير محصن (<15)'],
-          datasets: [{
-            data: [vaccinated, nonVaccinated],
-            backgroundColor: ['#10b981', '#ef4444']
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
+    function filterTable() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allRecords.filter(item => {
+        return item.employeeName.toLowerCase().includes(input) ||
+               item.nationalId.includes(input) ||
+               item.centerName.toLowerCase().includes(input) ||
+               item.department.toLowerCase().includes(input);
       });
-
-      const deptCounts = {};
-      recordsData.forEach(r => {
-        if(r.department) deptCounts[r.department] = (deptCounts[r.department] || 0) + 1;
-      });
-
-      const ctx2 = document.getElementById('deptChart').getContext('2d');
-      if (deptChartObj) deptChartObj.destroy();
-      deptChartObj = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(deptCounts),
-          datasets: [{
-            label: 'عدد الفحوصات',
-            data: Object.values(deptCounts),
-            backgroundColor: '#2563eb'
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
+      renderTable(filtered);
     }
   </script>
 </body>
