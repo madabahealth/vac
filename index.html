@@ -246,6 +246,8 @@
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("mainDashboard").style.display = "block";
         loadData();
+        // تفعيل التحديث التلقائي كل 5 ثوانٍ (5000 مللي ثانية)
+        setInterval(fetchData, 5000);
       }
     };
 
