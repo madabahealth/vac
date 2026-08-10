@@ -25,7 +25,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     body { background-color: var(--bg-light); color: var(--secondary); padding: 1.5rem; }
 
-    /* تسجيل الدخول */
+    /* شاشة تسجيل الدخول */
     #loginOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: #ffffff; display: flex; justify-content: center; align-items: center; z-index: 9999;
@@ -57,7 +57,7 @@
     .btn-refresh { background: var(--primary); color: white; }
     .btn-logout { background: #64748b; color: white; }
 
-    /* الداشبورد */
+    /* الكروت الإحصائية */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
     .kpi-card {
       background: var(--surface); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between;
@@ -183,7 +183,7 @@
               <th>المركز / القسم</th>
               <th>تاريخ الفحص</th>
               <th>نتيجة Titer</th>
-              <th>الجرعة 1 (اليوم)</th>
+              <th>الجرعة 1</th>
               <th>الجرعة 2 (بعد شهر)</th>
               <th>الجرعة 3 (بعد شهرين)</th>
               <th>إعادة الفحص</th>
@@ -197,7 +197,7 @@
     </div>
   </div>
 
-  <!-- Modal التعديل (بحقول مقفلة أوتوماتيكية) -->
+  <!-- Modal التعديل -->
   <div id="editModal">
     <div class="modal-content">
       <h3>تعديل فحص الموظف</h3>
@@ -304,6 +304,42 @@
       document.getElementById('countPending').innerText = pending;
     }
 
+    // دالة تنظيف التاريخ لضمان قراءته كما هو بالظبط (YYYY-MM-DD)
+    function cleanDateStr(dateStr) {
+      if (!dateStr) return "";
+      // إذا كان التاريخ يحتوي على حرف T (مثل صيغة ISO) نأخذ الجزء الأول فقط
+      let clean = String(dateStr).split('T')[0].trim();
+      
+      // التخطي إذا كانت الصيغة غير مكتملة
+      const parts = clean.split('-');
+      if (parts.length === 3) {
+        let y = parts[0];
+        let m = parts[1].padStart(2, '0');
+        let d = parts[2].padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+      return clean;
+    }
+
+    // دالة إضافة أشهر على نص التاريخ مباشرة بدون مشاكل Timezone
+    function addMonthsToDateString(dateStr, monthsToAdd) {
+      const clean = cleanDateStr(dateStr);
+      const parts = clean.split('-');
+      if (parts.length !== 3) return "-";
+
+      let year = parseInt(parts[0], 10);
+      let month = parseInt(parts[1], 10) - 1 + monthsToAdd; // الأشهر في JS تبدأ من 0
+      let day = parseInt(parts[2], 10);
+
+      // إنشاء تاريخ نصي بحت لتجنب فرق الساعات والمناطق الزمنية
+      let targetDate = new Date(year, month, day);
+      let y = targetDate.getFullYear();
+      let m = String(targetDate.getMonth() + 1).padStart(2, '0');
+      let d = String(targetDate.getDate()).padStart(2, '0');
+
+      return `${y}-${m}-${d}`;
+    }
+
     function renderTable(data) {
       const tbody = document.getElementById('tableBody');
       const loading = document.getElementById('loading');
@@ -322,26 +358,21 @@
         
         let titerDisplay = "";
         let dose1 = "-", dose2 = "-", dose3 = "-", retestDisplay = "-";
+        
+        // استخراج تاريخ الفحص بنص نظيف ومباشر
+        const displayTestDate = cleanDateStr(item.testDate);
 
         if (isNaN(titerVal)) {
           titerDisplay = `<span class="badge badge-yellow"><i class="fa-solid fa-hourglass-start"></i> بانتظار النتيجة</span>`;
         } else if (titerVal < 10) {
           titerDisplay = `<span class="badge badge-red"><i class="fa-solid fa-triangle-exclamation"></i> ${titerVal} (يحتاج مطعوم)</span>`;
           
-          const tDate = item.testDate ? new Date(item.testDate) : new Date();
-          dose1 = formatDateStr(tDate);
-          
-          const d2Obj = new Date(tDate);
-          d2Obj.setMonth(d2Obj.getMonth() + 1);
-          dose2 = formatDateStr(d2Obj);
-          
-          const d3Obj = new Date(tDate);
-          d3Obj.setMonth(d3Obj.getMonth() + 2);
-          dose3 = formatDateStr(d3Obj);
-
-          const retestObj = new Date(tDate);
-          retestObj.setMonth(retestObj.getMonth() + 4);
-          retestDisplay = formatDateStr(retestObj);
+          if (displayTestDate) {
+            dose1 = displayTestDate; // الجرعة الأولى هي نفسها تاريخ الفحص بدون زيادة أو نقصان
+            dose2 = addMonthsToDateString(displayTestDate, 1); // الجرعة الثانية (بعد شهر)
+            dose3 = addMonthsToDateString(displayTestDate, 2); // الجرعة الثالثة (بعد شهرين)
+            retestDisplay = addMonthsToDateString(displayTestDate, 4); // إعادة الفحص (بعد 4 أشهر)
+          }
         } else {
           titerDisplay = `<span class="badge badge-green"><i class="fa-solid fa-shield-halved"></i> ${titerVal} (محصن)</span>`;
           dose1 = dose2 = dose3 = "غير مطلوب";
@@ -353,7 +384,7 @@
           <td><strong>${item.employeeName || '-'}</strong></td>
           <td>${item.nationalId || '-'}</td>
           <td>${item.centerName || '-'} / ${item.department || '-'}</td>
-          <td class="date-cell">${item.testDate || '-'}</td>
+          <td class="date-cell">${displayTestDate || '-'}</td>
           <td>${titerDisplay}</td>
           <td class="date-cell">${dose1}</td>
           <td class="date-cell">${dose2}</td>
@@ -366,11 +397,6 @@
         `;
         tbody.appendChild(tr);
       });
-    }
-
-    function formatDateStr(dateObj) {
-      if (!dateObj || isNaN(dateObj)) return "-";
-      return dateObj.toISOString().split('T')[0];
     }
 
     function filterTable() {
@@ -401,9 +427,7 @@
         needsVaccineField.value = "نعم (يحتاج مطعوم)";
         needsVaccineField.style.color = "#dc2626";
         if (testDateInput) {
-          const tDate = new Date(testDateInput);
-          tDate.setMonth(tDate.getMonth() + 4);
-          retestDateField.value = tDate.toISOString().split('T')[0];
+          retestDateField.value = addMonthsToDateString(testDateInput, 4);
         }
       } else {
         needsVaccineField.value = "لا (محصن)";
@@ -420,7 +444,7 @@
       document.getElementById('editJobTitle').value = rec.jobTitle;
       document.getElementById('editCenter').value = rec.centerName;
       document.getElementById('editDept').value = rec.department;
-      document.getElementById('editTestDate').value = rec.testDate;
+      document.getElementById('editTestDate').value = cleanDateStr(rec.testDate);
       document.getElementById('editTiter').value = (rec.titerResult !== null && rec.titerResult !== undefined) ? rec.titerResult : "";
 
       autoCalcModal();
