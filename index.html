@@ -304,38 +304,49 @@
       document.getElementById('countPending').innerText = pending;
     }
 
-    // دالة تنظيف التاريخ لضمان قراءته كما هو بالظبط (YYYY-MM-DD)
-    function cleanDateStr(dateStr) {
-      if (!dateStr) return "";
-      // إذا كان التاريخ يحتوي على حرف T (مثل صيغة ISO) نأخذ الجزء الأول فقط
-      let clean = String(dateStr).split('T')[0].trim();
-      
-      // التخطي إذا كانت الصيغة غير مكتملة
-      const parts = clean.split('-');
+    // دالة ممتازة لاستخراج التاريخ فقط (YYYY-MM-DD) وإلغاء الوقت مهما كانت صيغته
+    function cleanDateStr(rawDate) {
+      if (!rawDate) return "";
+      let str = String(rawDate).trim();
+
+      // حذف أي وقت ملحق يقع بعد مسافة أو بعد حرف T
+      str = str.split('T')[0].split(' ')[0];
+
+      // تحويل الفواصل / إلى -
+      str = str.replace(/\//g, '-');
+
+      const parts = str.split('-');
       if (parts.length === 3) {
-        let y = parts[0];
-        let m = parts[1].padStart(2, '0');
-        let d = parts[2].padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        // حالة الصيغة DD-MM-YYYY
+        if (parts[0].length === 2 && parts[2].length === 4) {
+          return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+        // حالة الصيغة القياسية YYYY-MM-DD
+        if (parts[0].length === 4) {
+          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        }
       }
-      return clean;
+      return str;
     }
 
-    // دالة إضافة أشهر على نص التاريخ مباشرة بدون مشاكل Timezone
+    // دالة إضافة أشهر متقدمة وتتفادى أخطاء تغيير المناطق الزمنية والوقت
     function addMonthsToDateString(dateStr, monthsToAdd) {
       const clean = cleanDateStr(dateStr);
       const parts = clean.split('-');
       if (parts.length !== 3) return "-";
 
       let year = parseInt(parts[0], 10);
-      let month = parseInt(parts[1], 10) - 1 + monthsToAdd; // الأشهر في JS تبدأ من 0
+      let month = parseInt(parts[1], 10) - 1; // الأشهر في JS تبدأ من 0
       let day = parseInt(parts[2], 10);
 
-      // إنشاء تاريخ نصي بحت لتجنب فرق الساعات والمناطق الزمنية
-      let targetDate = new Date(year, month, day);
-      let y = targetDate.getFullYear();
-      let m = String(targetDate.getMonth() + 1).padStart(2, '0');
-      let d = String(targetDate.getDate()).padStart(2, '0');
+      if (isNaN(year) || isNaN(month) || isNaN(day)) return "-";
+
+      // إضافة الأشهر باستخدام Date.UTC لضمان الاستقرار وعدم التأثر بالساعات
+      let targetDate = new Date(Date.UTC(year, month + monthsToAdd, day));
+      
+      let y = targetDate.getUTCFullYear();
+      let m = String(targetDate.getUTCMonth() + 1).padStart(2, '0');
+      let d = String(targetDate.getUTCDate()).padStart(2, '0');
 
       return `${y}-${m}-${d}`;
     }
@@ -359,7 +370,7 @@
         let titerDisplay = "";
         let dose1 = "-", dose2 = "-", dose3 = "-", retestDisplay = "-";
         
-        // استخراج تاريخ الفحص بنص نظيف ومباشر
+        // استخراج تاريخ الفحص فقط بخالي من الوقت
         const displayTestDate = cleanDateStr(item.testDate);
 
         if (isNaN(titerVal)) {
@@ -367,11 +378,11 @@
         } else if (titerVal < 10) {
           titerDisplay = `<span class="badge badge-red"><i class="fa-solid fa-triangle-exclamation"></i> ${titerVal} (يحتاج مطعوم)</span>`;
           
-          if (displayTestDate) {
-            dose1 = displayTestDate; // الجرعة الأولى هي نفسها تاريخ الفحص بدون زيادة أو نقصان
-            dose2 = addMonthsToDateString(displayTestDate, 1); // الجرعة الثانية (بعد شهر)
-            dose3 = addMonthsToDateString(displayTestDate, 2); // الجرعة الثالثة (بعد شهرين)
-            retestDisplay = addMonthsToDateString(displayTestDate, 4); // إعادة الفحص (بعد 4 أشهر)
+          if (displayTestDate && displayTestDate !== "-") {
+            dose1 = displayTestDate; // الجرعة 1 نفس تاريخ الفحص
+            dose2 = addMonthsToDateString(displayTestDate, 1); // الجرعة 2 بعد شهر
+            dose3 = addMonthsToDateString(displayTestDate, 2); // الجرعة 3 بعد شهرين
+            retestDisplay = addMonthsToDateString(displayTestDate, 4); // إعادة الفحص بعد 4 أشهر
           }
         } else {
           titerDisplay = `<span class="badge badge-green"><i class="fa-solid fa-shield-halved"></i> ${titerVal} (محصن)</span>`;
