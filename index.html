@@ -27,44 +27,28 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-main); padding: 1.5rem; }
 
-    /* شاشة تسجيل الدخول Overlay */
+    /* شاشة تسجيل الدخول */
     #loginOverlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #ffffff; display: flex; justify-content: center; align-items: center; z-index: 9999;
     }
-
     .login-box {
-      background: #ffffff;
-      padding: 2.5rem;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      border: 1px solid #f1f5f9;
+      background: #ffffff; padding: 2.5rem; border-radius: 16px; width: 100%; max-width: 400px;
+      text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border: 1px solid #f1f5f9;
     }
-
     .login-box h2 { margin-bottom: 1.5rem; color: var(--secondary); font-size: 1.4rem; }
     .input-group { text-align: right; margin-bottom: 1rem; }
     .input-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: #475569; }
     .login-box input {
-      width: 100%; padding: 0.85rem; background-color: #f8fafc;
-      border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none;
+      width: 100%; padding: 0.85rem; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none;
     }
     .login-box input:focus { border-color: var(--primary); background-color: #ffffff; }
     .login-box button {
-      width: 100%; padding: 0.85rem; background: var(--primary); color: white;
-      border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 1rem; margin-top: 0.5rem;
+      width: 100%; padding: 0.85rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 1rem; margin-top: 0.5rem;
     }
 
     /* الواجهة الرئيسية */
-    .container { max-width: 1350px; margin: 0 auto; display: none; }
-
+    .container { max-width: 1400px; margin: 0 auto; display: none; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
     .header h1 { font-size: 1.6rem; color: var(--secondary); font-weight: 800; }
     .header-btns { display: flex; gap: 0.5rem; }
@@ -75,11 +59,10 @@
     .btn-refresh { background: var(--primary); color: white; }
     .btn-logout { background: #64748b; color: white; }
 
-    /* الداشبورد الإحصائي */
+    /* الكروت الإحصائية */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
     .kpi-card {
-      background: var(--surface); border-radius: var(--radius); padding: 1.25rem;
-      border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between;
     }
     .kpi-info h3 { font-size: 0.85rem; color: #64748b; margin-bottom: 0.4rem; }
     .kpi-info .value { font-size: 1.8rem; font-weight: 800; }
@@ -97,7 +80,7 @@
     .card-yellow .value { color: var(--color-yellow); }
     .card-yellow .kpi-icon { background: #fef3c7; color: var(--color-yellow); }
 
-    /* جدول البيانات */
+    /* الجدول */
     .table-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); padding: 1.5rem; }
     .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
     .search-box { position: relative; min-width: 280px; }
@@ -106,21 +89,22 @@
 
     .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: right; }
-    th { background: #f1f5f9; padding: 0.85rem; font-size: 0.85rem; color: var(--secondary); border-bottom: 2px solid var(--border); white-space: nowrap; }
-    td { padding: 0.85rem; font-size: 0.88rem; border-bottom: 1px solid var(--border); }
+    th { background: #f1f5f9; padding: 0.85rem; font-size: 0.82rem; color: var(--secondary); border-bottom: 2px solid var(--border); white-space: nowrap; }
+    td { padding: 0.75rem 0.85rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
     tr:hover { background-color: #f8fafc; }
 
-    /* الألوان الشديدة للبادج حسب الشرط */
-    .badge { padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
+    .badge { padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; display: inline-block; }
     .badge-red { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
     .badge-green { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
     .badge-yellow { background: #fef3c7; color: #d97706; border: 1px solid #fde047; }
 
-    .schedule-box { font-size: 0.78rem; line-height: 1.5; color: #475569; background: #fff5f5; padding: 0.5rem; border-radius: 6px; border-right: 3px solid #ef4444; margin-top: 0.3rem; }
+    .date-cell { font-family: monospace; font-weight: 600; color: #334155; }
 
-    .action-btn { border: none; padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+    .action-btn { border: none; padding: 0.45rem 0.65rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 700; margin-left: 2px; }
     .btn-edit { background: #e0f2fe; color: #0369a1; }
+    .btn-edit:hover { background: #bae6fd; }
     .btn-delete { background: #fee2e2; color: #b91c1c; }
+    .btn-delete:hover { background: #fca5a5; }
 
     /* Modal التعديل */
     #editModal {
@@ -139,7 +123,7 @@
 </head>
 <body>
 
-  <!-- شاشة تسجيل الدخول البيضاء -->
+  <!-- شاشة تسجيل الدخول -->
   <div id="loginOverlay">
     <div class="login-box">
       <h2><i class="fa-solid fa-user-shield" style="color: var(--primary);"></i> تسجيل دخول المدير</h2>
@@ -152,7 +136,7 @@
         <input type="password" id="passInput" placeholder="أدخل كلمة المرور" onkeypress="if(event.key==='Enter') checkLogin()">
       </div>
       <button onclick="checkLogin()">دخول <i class="fa-solid fa-arrow-left"></i></button>
-      <p id="loginError" style="color: #ef4444; margin-top: 0.8rem; font-size: 0.85rem; display: none;">خطأ في البيانات!</p>
+      <p id="loginError" style="color: #ef4444; margin-top: 0.8rem; font-size: 0.85rem; display: none;">اسم المستخدم أو كلمة المرور غير صحيحة!</p>
     </div>
   </div>
 
@@ -182,10 +166,10 @@
       </div>
     </div>
 
-    <!-- الجدول -->
+    <!-- الجدول المطور متضمناً مواعيد المطاعيم -->
     <div class="table-card">
       <div class="table-header">
-        <h2>سجل فحوصات الموظفين وخطة التطعيم</h2>
+        <h2>سجل فحوصات الموظفين ومواعيد الجرعات</h2>
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="بحث باسم الموظف أو الرقم الوطني...">
@@ -202,7 +186,9 @@
               <th>المركز / القسم</th>
               <th>تاريخ الفحص</th>
               <th>نتيجة Titer</th>
-              <th>التوصية ومواعيد المطاعيم</th>
+              <th>الجرعة 1 (اليوم)</th>
+              <th>الجرعة 2 (بعد شهر)</th>
+              <th>الجرعة 3 (بعد شهرين)</th>
               <th>إعادة الفحص</th>
               <th>إجراءات</th>
             </tr>
@@ -230,7 +216,7 @@
       </div>
       <div class="modal-actions">
         <button class="action-btn btn-delete" onclick="closeEditModal()">إلغاء</button>
-        <button class="action-btn btn-edit" onclick="saveEdit()"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+        <button class="action-btn btn-edit" id="btnSaveEdit" onclick="saveEdit()"><i class="fa-solid fa-floppy-disk"></i> حفظ والتحديث</button>
       </div>
     </div>
   </div>
@@ -247,9 +233,6 @@
         document.getElementById("mainDashboard").style.display = "block";
         loadData();
       }
-      setInterval(() => {
-        if (sessionStorage.getItem("adminLoggedIn") === "true") fetchData(true);
-      }, 5000);
     };
 
     function checkLogin() {
@@ -273,10 +256,10 @@
     function loadData() {
       const refreshIcon = document.getElementById('refreshIcon');
       if (refreshIcon) refreshIcon.classList.add('fa-spin');
-      fetchData(false);
+      fetchData();
     }
 
-    function fetchData(isSilent = false) {
+    function fetchData() {
       fetch(SCRIPT_URL + "?action=GET_RECORDS")
         .then(res => res.json())
         .then(data => {
@@ -324,48 +307,36 @@
         const titerVal = (item.titerResult !== null && item.titerResult !== "") ? parseFloat(item.titerResult) : NaN;
         
         let titerDisplay = "";
-        let recommendationHTML = "";
-        let retestDisplay = item.retestDate || "-";
+        let dose1 = "-", dose2 = "-", dose3 = "-", retestDisplay = "-";
 
-        // الشرط 1: بانتظار النتيجة (أصفر)
+        // 1. حالة بانتظار النتيجة (أصفر)
         if (isNaN(titerVal)) {
-          titerDisplay = `<span class="badge badge-yellow"><i class="fa-solid fa-hourglass-start"></i> قيد الانتظار</span>`;
-          recommendationHTML = `<span class="badge badge-yellow">بانتظار النتيجة</span>`;
+          titerDisplay = `<span class="badge badge-yellow"><i class="fa-solid fa-hourglass-start"></i> بانتظار النتيجة</span>`;
         } 
-        // الشرط 2: النتيجة اقل من 10 (أحمر + جدولة المطاعيم وإعادة الفحص)
+        // 2. حالة التمييز أقل من 10 (أحمر) - حسُبت التواريخ بالتفصيل
         else if (titerVal < 10) {
-          titerDisplay = `<span class="badge badge-red"><i class="fa-solid fa-circle-xmark"></i> ${titerVal}</span>`;
+          titerDisplay = `<span class="badge badge-red"><i class="fa-solid fa-triangle-exclamation"></i> ${titerVal} (يحتاج مطعوم)</span>`;
           
-          // حساب تواريخ الجرعات بناءً على تاريخ الفحص
           const tDate = item.testDate ? new Date(item.testDate) : new Date();
           
-          const d1 = formatDateStr(tDate); // اليوم (نفس تاريخ الادخال/الفحص)
+          dose1 = formatDateStr(tDate); // الجرعة الأولى: اليوم
           
           const d2Obj = new Date(tDate);
-          d2Obj.setMonth(d2Obj.getMonth() + 1); // بعد شهر
-          const d2 = formatDateStr(d2Obj);
+          d2Obj.setMonth(d2Obj.getMonth() + 1); // الجرعة الثانية: بعد شهر
+          dose2 = formatDateStr(d2Obj);
           
           const d3Obj = new Date(tDate);
-          d3Obj.setMonth(d3Obj.getMonth() + 2); // بعد شهرين
-          const d3 = formatDateStr(d3Obj);
+          d3Obj.setMonth(d3Obj.getMonth() + 2); // الجرعة الثالثة: بعد شهرين
+          dose3 = formatDateStr(d3Obj);
 
           const retestObj = new Date(tDate);
-          retestObj.setMonth(retestObj.getMonth() + 4); // شهرين بعد المطعوم الثالث = 4 أشهر
+          retestObj.setMonth(retestObj.getMonth() + 4); // إعادة الفحص: بعد 4 أشهر (شهرين بعد الجرعة 3)
           retestDisplay = formatDateStr(retestObj);
-
-          recommendationHTML = `
-            <span class="badge badge-red"><i class="fa-solid fa-syringe"></i> يجب أخذ المطعوم</span>
-            <div class="schedule-box">
-              • <strong>الجرعة 1:</strong> ${d1} (اليوم)<br>
-              • <strong>الجرعة 2:</strong> ${d2} (بعد شهر)<br>
-              • <strong>الجرعة 3:</strong> ${d3} (بعد شهرين)
-            </div>
-          `;
         } 
-        // الشرط 3: النتيجة اكثر من 10 (اخضر)
+        // 3. حالة أكبر من أو يساوي 10 (أخضر)
         else {
-          titerDisplay = `<span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> ${titerVal}</span>`;
-          recommendationHTML = `<span class="badge badge-green"><i class="fa-solid fa-shield"></i> لا يحتاج مطاعيم</span>`;
+          titerDisplay = `<span class="badge badge-green"><i class="fa-solid fa-shield-halved"></i> ${titerVal} (محصن)</span>`;
+          dose1 = dose2 = dose3 = "غير مطلوب";
           retestDisplay = "غير مطلوب";
         }
 
@@ -374,13 +345,15 @@
           <td><strong>${item.employeeName || '-'}</strong></td>
           <td>${item.nationalId || '-'}</td>
           <td>${item.centerName || '-'} / ${item.department || '-'}</td>
-          <td>${item.testDate || '-'}</td>
+          <td class="date-cell">${item.testDate || '-'}</td>
           <td>${titerDisplay}</td>
-          <td>${recommendationHTML}</td>
-          <td><strong>${retestDisplay}</strong></td>
+          <td class="date-cell">${dose1}</td>
+          <td class="date-cell">${dose2}</td>
+          <td class="date-cell">${dose3}</td>
+          <td class="date-cell"><strong>${retestDisplay}</strong></td>
           <td>
-            <button class="action-btn btn-edit" onclick="openEditModal(${index})"><i class="fa-solid fa-pen"></i></button>
-            <button class="action-btn btn-delete" onclick="deleteRecord(${item.rowIndex})"><i class="fa-solid fa-trash"></i></button>
+            <button class="action-btn btn-edit" onclick="openEditModal(${index})"><i class="fa-solid fa-pen"></i> تعديل</button>
+            <button class="action-btn btn-delete" onclick="deleteRecord(${item.rowIndex})"><i class="fa-solid fa-trash"></i> حذف</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -401,6 +374,7 @@
       renderTable(filtered);
     }
 
+    /* إصلاح منطق التعديل والدعم */
     function openEditModal(index) {
       const rec = allRecords[index];
       document.getElementById('editRowIndex').value = rec.rowIndex;
@@ -410,7 +384,7 @@
       document.getElementById('editCenter').value = rec.centerName;
       document.getElementById('editDept').value = rec.department;
       document.getElementById('editTestDate').value = rec.testDate;
-      document.getElementById('editTiter').value = rec.titerResult !== null ? rec.titerResult : "";
+      document.getElementById('editTiter').value = (rec.titerResult !== null && rec.titerResult !== undefined) ? rec.titerResult : "";
 
       document.getElementById('editModal').style.display = 'flex';
     }
@@ -420,7 +394,11 @@
     }
 
     function saveEdit() {
-      const rowIndex = document.getElementById('editRowIndex').value;
+      const btnSave = document.getElementById('btnSaveEdit');
+      btnSave.disabled = true;
+      btnSave.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...`;
+
+      const rowIndex = parseInt(document.getElementById('editRowIndex').value);
       const updatedData = {
         employeeName: document.getElementById('editEmpName').value,
         nationalId: document.getElementById('editNatId').value,
@@ -434,26 +412,40 @@
       fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "UPDATE_RECORD", rowIndex: parseInt(rowIndex), data: updatedData })
+        body: JSON.stringify({ action: "UPDATE_RECORD", rowIndex: rowIndex, data: updatedData })
       })
       .then(res => res.json())
-      .then(() => {
-        closeEditModal();
-        loadData();
+      .then(res => {
+        if(res.status === "success") {
+          closeEditModal();
+          loadData();
+        } else {
+          alert("حدث خطأ أثناء التعديل: " + res.message);
+        }
+      })
+      .catch(err => alert("خطأ في الاتصال بالشبكة!"))
+      .finally(() => {
+        btnSave.disabled = false;
+        btnSave.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> حفظ والتحديث`;
       });
     }
 
     function deleteRecord(rowIndex) {
-      if (confirm("هل أنت تأكد من الحذف النهائي؟")) {
+      if (confirm("هل أنت تأكد من رغبتك في حذف هذا السجل بشكل نهائي؟")) {
         fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "DELETE_RECORD", rowIndex: parseInt(rowIndex) })
         })
         .then(res => res.json())
-        .then(() => {
-          loadData();
-        });
+        .then(res => {
+          if(res.status === "success") {
+            loadData();
+          } else {
+            alert("تعذر الحذف: " + res.message);
+          }
+        })
+        .catch(err => alert("خطأ في الاتصال بالشبكة!"));
       }
     }
   </script>
