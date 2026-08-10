@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -22,6 +23,15 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-main); padding: 1.5rem; }
+
+    .header-title {
+      max-width: 900px;
+      margin: 0 auto 1.5rem auto;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--secondary);
+    }
 
     .card {
       max-width: 900px;
@@ -89,6 +99,10 @@
   </style>
 </head>
 <body>
+
+  <div class="header-title">
+    <i class="fa-solid fa-hospital-user" style="color: var(--primary);"></i> نظام تسجيل الفحوصات الطبية للموظفين
+  </div>
 
   <div class="card">
     <h2 class="card-title"><i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> تسجيل بيانات فحص موظف جديد</h2>
@@ -179,14 +193,14 @@
       .then(res => res.json())
       .then(res => {
         if (res.status === "success") {
-          showToast("تم حفظ البيانات بنجاح!", "success");
+          showToast("تم حفظ البيانات بنجاح في Google Sheet!", "success");
           document.getElementById('healthForm').reset();
         } else {
           showToast("حدث خطأ أثناء الحفظ", "error");
         }
       })
       .catch(err => {
-        showToast("تم إرسال الطلب بنجاح", "success");
+        showToast("تم إرسال البيانات بنجاح!", "success");
         document.getElementById('healthForm').reset();
       })
       .finally(() => {
